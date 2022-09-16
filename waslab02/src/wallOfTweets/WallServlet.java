@@ -11,6 +11,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import com.google.appengine.repackaged.org.json.JSONArray;
+import com.google.appengine.repackaged.org.json.JSONException;
 import com.google.appengine.repackaged.org.json.JSONObject;
 
 
@@ -62,7 +63,21 @@ public class WallServlet extends HttpServlet {
 			/*      ^
 		      The String variable body contains the sent (JSON) Data. 
 		      Complete the implementation below.*/
+			/* TASK #3 */
 			
+			try {
+				JSONObject tweet_json = new JSONObject(body);
+				String author = tweet_json.getString("author");
+				String text = tweet_json.getString("text");
+				Tweet newTweet = Database.insertTweet(author, text);
+				String newTweetJSON = new JSONObject(newTweet).toString();
+				resp.getWriter().println(newTweetJSON);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			
+			/* TASK #3 end */
 		}
 	}
 	
