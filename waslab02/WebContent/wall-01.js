@@ -63,10 +63,13 @@ function getTweets() {
 	req.onload = function() {
 		if (req.status == 200) { // 200 OK
 			var tweet_list = req.responseText;
-			/*
-			 * TASK #2 -->
-			 */
-			document.getElementById("tweet_list").innerHTML = tweet_list;
+			/* TASK #2 */
+			const parsed_tweets = JSON.parse(tweet_list);
+			for (let i = 0; i < parsed_tweets.length; ++i) {
+				const tweet = getTweetHTML(parsed_tweets[i], "like");
+				document.getElementById("tweet_list").innerHTML += tweet;
+			}
+			/* TASK #2 end */
 		}
 	};
 	req.send(null); 
