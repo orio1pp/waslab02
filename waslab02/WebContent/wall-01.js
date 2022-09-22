@@ -1,4 +1,4 @@
-var baseURI = "http://localhost:8080/waslab02";
+var baseURI = "http://localhost:8081/waslab02";
 var tweetsURI = baseURI+"/tweets";
 
 var req;
@@ -43,25 +43,24 @@ function likeHandler(tweetID) {
 }
 
 function deleteHandler(tweetID) {
-	/* TASK #4 */
+	/* TASK #4 & #5 */
 	
 	req = new XMLHttpRequest();
-	req.open('DELETE', tweetsURI+ "/" + tweetID, /*async*/true);
+	req.open('DELETE', tweetsURI + "/" + tweetID, true);
 	req.onload = function() { 
 		if (req.status == 200) { // 200 OK
-			document.getElementById("tweet_"+tweetID).remove();
+			document.getElementById("tweet_" + tweetID).remove();
 		}
 	};
-	req.send(/*no params*/null);
+	req.send(null);
 	
-	/* TASK #4 end */
+	/* TASK #4 & #5 end */
 }
 
 function getTweetHTML(tweet, action) {  // action :== "like" xor "delete"
 	var dat = new Date(tweet.date);
 	var dd = dat.toDateString()+" @ "+dat.toLocaleTimeString();
 	return tweetBlock.format(tweet.id, tweet.likes, tweet.author, tweet.text, dd, action);
-
 }
 
 function getTweets() {
@@ -92,9 +91,10 @@ function tweetHandler() {
 	req.open('POST', tweetsURI, /*async*/true);
 	req.onload = function() { 
 		if (req.status == 200) { // 200 OK
-			let tweet = JSON.parse(req.responseText);
-			tweet = getTweetHTML(tweet, "delete");
-			document.getElementById("tweet_list").innerHTML = tweet + document.getElementById("tweet_list").innerHTML;
+			let tweetJSON = JSON.parse(req.responseText);
+			let tweetHTML = getTweetHTML(tweetJSON, "delete");
+			document.getElementById("tweet_list").innerHTML = tweetHTML + document.getElementById("tweet_list").innerHTML;
+			localStorage.setItem(tweetJSON["id"], tweetJSON["token"]);
 		}
 	};
 	req.setRequestHeader("Content-Type","application/json");

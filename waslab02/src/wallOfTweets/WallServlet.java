@@ -1,6 +1,9 @@
 package wallOfTweets;
 
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.List;
 
 import javax.servlet.ServletException;
@@ -70,8 +73,14 @@ public class WallServlet extends HttpServlet {
 				String author = tweet_json.getString("author");
 				String text = tweet_json.getString("text");
 				Tweet newTweet = Database.insertTweet(author, text);
-				String newTweetJSON = new JSONObject(newTweet).toString();
-				resp.getWriter().println(newTweetJSON);
+				/* TASK #5 */
+				
+				JSONObject newTweetJSON = new JSONObject(newTweet);
+				String encriptedTweet = encriptarTweet(newTweet.getId().toString());
+				newTweetJSON.accumulate("token", encriptedTweet);
+				resp.getWriter().println(newTweetJSON.toString());
+				
+				/* TASK #5 end */
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -90,6 +99,27 @@ public class WallServlet extends HttpServlet {
 		Database.deleteTweet(id);
 
 		//throw new ServletException("DELETE not yet implemented");
+	}
+	
+	private static String encriptarTweet(String tweetString) {
+		try {
+			MessageDigest digest = MessageDigest.getInstance("SHA-256");
+			byte[] hash = digest.digest(
+					tweetString.getBytes(StandardCharsets.UTF_8));
+			    StringBuilder hexString = new StringBuilder(2 * hash.length);
+			    for (int i = 0; i < hash.length; i++) {
+			        String hex = Integer.toHexString(0xff & hash[i]);
+			        if(hex.length() == 1) {
+			            hexString.append('0');
+			        }
+			        hexString.append(hex);
+			    }
+			    return hexString.toString();
+		} catch (NoSuchAlgorithmException e) {
+			// TODO Auto-generated catch block
+			return "";
+		}
+
 	}
 
 }
