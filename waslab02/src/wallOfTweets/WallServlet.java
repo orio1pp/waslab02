@@ -5,6 +5,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.List;
+import java.util.Vector;
 
 import javax.servlet.ServletException;
 import javax.servlet.ServletInputStream;
@@ -91,13 +92,23 @@ public class WallServlet extends HttpServlet {
 		}
 	}
 	
+	public boolean existsId(String token) {
+		Vector<Tweet> tweets = Database.getTweets();
+		for(Tweet tweet : tweets) {
+			if(token.equals(encriptarTweet(tweet.getId().toString()))) 
+				return true;
+		}
+		return false;
+	}
+	
 	@Override
 	// Implements DELETE http://localhost:8080/waslab02/tweets/:id
 	public void doDelete(HttpServletRequest req, HttpServletResponse resp)
 			throws IOException, ServletException {
 		String uri = req.getRequestURI();
+		String token = req.getHeader("token");
 		int id = uri.lastIndexOf("/likes");
-		Database.deleteTweet(id);
+		if(existsId(token))Database.deleteTweet(id);
 
 		//throw new ServletException("DELETE not yet implemented");
 	}

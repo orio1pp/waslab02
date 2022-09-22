@@ -46,10 +46,12 @@ function deleteHandler(tweetID) {
 	/* TASK #4 & #5 */
 	
 	req = new XMLHttpRequest();
-	req.open('DELETE', tweetsURI + "/" + tweetID, true);
+	req.open('DELETE', tweetsURI + "/" + tweetID, true)
+	req.setRequestHeader("token", localStorage.getItem(tweetID));
 	req.onload = function() { 
 		if (req.status == 200) { // 200 OK
 			document.getElementById("tweet_" + tweetID).remove();
+			localStorage.removeItem(tweetID);
 		}
 	};
 	req.send(null);
@@ -64,8 +66,6 @@ function getTweetHTML(tweet, action) {  // action :== "like" xor "delete"
 }
 
 function itIsInLocalStorage(id){
-	console.log(localStorage.getItem(id));
-	console.log(localStorage.getItem(id) != null);
 	return localStorage.getItem(id) != null
 }
 
@@ -77,10 +77,8 @@ function getTweets() {
 			var tweet_list = req.responseText;
 			/* TASK #2 */
 			const parsed_tweets = JSON.parse(tweet_list);
-			console.log(tweet_list);
 			let tweet;
 			for (let i = 0; i < parsed_tweets.length; ++i) {
-				console.log(parsed_tweets[i]["id"]);
 				if(itIsInLocalStorage(parsed_tweets[i]["id"])){
 					tweet = getTweetHTML(parsed_tweets[i], "delete");
 				}
@@ -108,9 +106,7 @@ function tweetHandler() {
 			let tweetJSON = JSON.parse(req.responseText);
 			let tweetHTML = getTweetHTML(tweetJSON, "delete");
 			document.getElementById("tweet_list").innerHTML = tweetHTML + document.getElementById("tweet_list").innerHTML;
-			console.log(tweetJSON["id"] + tweetJSON["token"] );
 			localStorage.setItem(tweetJSON["id"], tweetJSON["token"]);
-			console.log(localStorage.getItem(tweetJSON["id"])+ "   pipo");
 		}
 	};
 	req.setRequestHeader("Content-Type","application/json");
