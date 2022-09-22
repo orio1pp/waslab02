@@ -63,7 +63,7 @@ public class WallServlet extends HttpServlet {
 			ServletInputStream  httpIn  = req.getInputStream();
 			httpIn.readLine(httpInData, 0, max_length_of_data);
 			String body = new String(httpInData);
-			/*      ^
+			/*      ^ 	
 		      The String variable body contains the sent (JSON) Data. 
 		      Complete the implementation below.*/
 			/* TASK #3 */
@@ -78,6 +78,7 @@ public class WallServlet extends HttpServlet {
 				JSONObject newTweetJSON = new JSONObject(newTweet);
 				String encriptedTweet = encriptarTweet(newTweet.getId().toString());
 				newTweetJSON.accumulate("token", encriptedTweet);
+				System.out.println(newTweetJSON);
 				resp.getWriter().println(newTweetJSON.toString());
 				
 				/* TASK #5 end */

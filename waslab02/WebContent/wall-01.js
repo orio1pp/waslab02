@@ -1,4 +1,4 @@
-var baseURI = "http://localhost:8081/waslab02";
+var baseURI = "http://localhost:8080/waslab02";
 var tweetsURI = baseURI+"/tweets";
 
 var req;
@@ -63,6 +63,12 @@ function getTweetHTML(tweet, action) {  // action :== "like" xor "delete"
 	return tweetBlock.format(tweet.id, tweet.likes, tweet.author, tweet.text, dd, action);
 }
 
+function itIsInLocalStorage(id){
+	console.log(localStorage.getItem(id));
+	console.log(localStorage.getItem(id) != null);
+	return localStorage.getItem(id) != null
+}
+
 function getTweets() {
 	req = new XMLHttpRequest(); 
 	req.open("GET", tweetsURI, true); 
@@ -71,8 +77,16 @@ function getTweets() {
 			var tweet_list = req.responseText;
 			/* TASK #2 */
 			const parsed_tweets = JSON.parse(tweet_list);
+			console.log(tweet_list);
+			let tweet;
 			for (let i = 0; i < parsed_tweets.length; ++i) {
-				const tweet = getTweetHTML(parsed_tweets[i], "like");
+				console.log(parsed_tweets[i]["id"]);
+				if(itIsInLocalStorage(parsed_tweets[i]["id"])){
+					tweet = getTweetHTML(parsed_tweets[i], "delete");
+				}
+				else{
+					tweet = getTweetHTML(parsed_tweets[i], "like");	
+				}
 				document.getElementById("tweet_list").innerHTML += tweet;
 			}
 			/* TASK #2 end */
@@ -94,7 +108,9 @@ function tweetHandler() {
 			let tweetJSON = JSON.parse(req.responseText);
 			let tweetHTML = getTweetHTML(tweetJSON, "delete");
 			document.getElementById("tweet_list").innerHTML = tweetHTML + document.getElementById("tweet_list").innerHTML;
+			console.log(tweetJSON["id"] + tweetJSON["token"] );
 			localStorage.setItem(tweetJSON["id"], tweetJSON["token"]);
+			console.log(localStorage.getItem(tweetJSON["id"])+ "   pipo");
 		}
 	};
 	req.setRequestHeader("Content-Type","application/json");
